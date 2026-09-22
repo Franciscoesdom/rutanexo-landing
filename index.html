@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RutaNexo — Logística sin intermediarios</title>
+<style>
+  :root{
+    --azul:#0B3D91;
+    --azul-claro:#1E5BC6;
+    --naranja:#F2A93B;
+    --gris-oscuro:#1A1A1A;
+    --gris:#666666;
+    --gris-claro:#F5F6F8;
+    --blanco:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--gris-oscuro);
+    line-height:1.5;
+  }
+  a{text-decoration:none;color:inherit;}
+
+  /* NAV */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 40px;
+    background:var(--blanco);
+    border-bottom:1px solid #EAEAEA;
+    position:sticky;
+    top:0;
+    z-index:10;
+  }
+  .logo{
+    font-size:22px;
+    font-weight:800;
+    color:var(--azul);
+  }
+  nav ul{
+    list-style:none;
+    display:flex;
+    gap:32px;
+  }
+  nav ul li a{
+    font-size:15px;
+    font-weight:500;
+    color:var(--gris-oscuro);
+    transition:color .2s;
+  }
+  nav ul li a:hover{color:var(--azul-claro);}
+  .btn-nav{
+    background:var(--azul);
+    color:var(--blanco);
+    padding:10px 20px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:14px;
+  }
+
+  /* HERO */
+  .hero{
+    background:linear-gradient(135deg,var(--azul) 0%,var(--azul-claro) 100%);
+    color:var(--blanco);
+    padding:90px 40px;
+    text-align:center;
+  }
+  .hero h1{
+    font-size:42px;
+    max-width:760px;
+    margin:0 auto 20px;
+    font-weight:800;
+    line-height:1.2;
+  }
+  .hero p{
+    font-size:18px;
+    max-width:600px;
+    margin:0 auto 32px;
+    color:#DCE6FA;
+  }
+  .btn-hero{
+    background:var(--naranja);
+    color:var(--gris-oscuro);
+    padding:16px 34px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:16px;
+    display:inline-block;
+  }
+
+  /* CARDS */
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:28px;
+    padding:80px 40px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  .card{
+    background:var(--gris-claro);
+    border-radius:14px;
+    padding:32px 28px;
+  }
+  .card .icon{
+    width:48px;
+    height:48px;
+    background:var(--azul);
+    border-radius:10px;
+    margin-bottom:18px;
+  }
+  .card h3{
+    font-size:19px;
+    margin-bottom:10px;
+    color:var(--azul);
+  }
+  .card p{
+    font-size:15px;
+    color:var(--gris);
+  }
+
+  /* FOOTER */
+  footer{
+    background:var(--gris-oscuro);
+    color:#CFCFCF;
+    padding:40px;
+    text-align:center;
+    font-size:14px;
+  }
+  footer .footer-logo{
+    color:var(--blanco);
+    font-weight:700;
+    font-size:18px;
+    margin-bottom:10px;
+  }
+
+  @media(max-width:768px){
+    header{flex-direction:column;gap:14px;padding:18px 20px;}
+    nav ul{gap:18px;flex-wrap:wrap;justify-content:center;}
+    .hero h1{font-size:30px;}
+    .cards{grid-template-columns:1fr;padding:60px 20px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">RutaNexo</div>
+  <nav>
+    <ul>
+      <li><a href="#como-funciona">Cómo funciona</a></li>
+      <li><a href="#empresas">Para empresas</a></li>
+      <li><a href="#transportistas">Para transportistas</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+  <a href="#contacto" class="btn-nav">Solicitar demo</a>
+</header>
+
+<section class="hero">
+  <h1>Conecta tu empresa con transportistas verificados en todo México</h1>
+  <p>RutaNexo conecta directamente a negocios que necesitan transportar mercancía con transportistas independientes verificados, sin intermediarios que encarezcan el flete.</p>
+  <a href="#contacto" class="btn-hero">Solicita una demo</a>
+</section>
+
+<section class="cards" id="como-funciona">
+  <div class="card">
+    <div class="icon"></div>
+    <h3>Red de transportistas verificados</h3>
+    <p>Todos los transportistas en RutaNexo pasan por un proceso de verificación de identidad y unidad antes de operar en la plataforma.</p>
+  </div>
+  <div class="card">
+    <div class="icon"></div>
+    <h3>Cotiza y agenda en minutos</h3>
+    <p>Publica tu envío, recibe cotizaciones de transportistas disponibles en tu ruta y agenda la recolección directamente desde la plataforma.</p>
+  </div>
+  <div class="card">
+    <div class="icon"></div>
+    <h3>Tecnología de punta</h3>
+    <p>Usamos tecnología de punta para optimizar cada entrega y ofrecerte la mejor experiencia logística.</p>
+  </div>
+</section>
+
+<footer id="contacto">
+  <div class="footer-logo">RutaNexo Logística</div>
+  <p>Conectando empresas y transportistas independientes en México</p>
+  <p style="margin-top:12px;">contacto@rutanexo.mx &nbsp;|&nbsp; © 2026 RutaNexo Logística</p>
+</footer>
+
+</body>
+</html>
