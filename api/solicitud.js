@@ -53,8 +53,11 @@ module.exports = async (req, res) => {
       body: JSON.stringify(solicitud),
     });
     if (!respuesta.ok) {
-      console.error("Supabase respondió", respuesta.status, await respuesta.text());
-      return res.status(502).json({ error: "No pudimos guardar tu solicitud." });
+      const detalle = await respuesta.text();
+      console.error("Supabase respondió", respuesta.status, detalle);
+      // El código de Supabase (p. ej. 401 o PGRST205) ayuda a diagnosticar y no expone la clave.
+      const codigo = (detalle.match(/"code"\s*:\s*"([^"]+)"/) || [])[1] || "";
+      return res.status(502).json({ error: "No pudimos guardar tu solicitud.", codigo: `${respuesta.status} ${codigo}`.trim() });
     }
     return res.status(201).json({ ok: true });
   } catch (error) {
