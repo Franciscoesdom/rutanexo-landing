@@ -317,7 +317,7 @@
       <a href="#contacto">Contacto</a>
     </nav>
     <div class="nav-cta">
-      <a href="#contacto" class="btn btn-ghost btn-sm">Solicitar demo</a>
+      <a href="#solicitud" class="btn btn-ghost btn-sm">Solicitar demo</a>
     </div>
   </div>
 </header>
@@ -329,7 +329,7 @@
       <h1>Conecta tu empresa con <span>transportistas verificados</span>, sin intermediarios</h1>
       <p class="lead">RutaNexo une a negocios que necesitan transportar mercancía con transportistas independientes verificados en todo el país. Cotiza, agenda y da seguimiento desde un solo lugar.</p>
       <div class="hero-actions">
-        <a href="#contacto" class="btn btn-primary">Solicita una demo</a>
+        <a href="#solicitud" class="btn btn-primary">Solicita una demo</a>
         <a href="#como-funciona" class="btn btn-secondary">Ver cómo funciona</a>
       </div>
       <div class="hero-trust">
@@ -468,7 +468,7 @@
       <span class="tag">Para empresas</span>
       <h3>Transportistas verificados, cotización en minutos</h3>
       <p>Como gerente de logística, sabes lo que cuesta encontrar transportistas disponibles y confiables cuando los necesitas. RutaNexo te conecta directo con una red verificada, sin buscar por WhatsApp ni esperar días por una cotización.</p>
-      <a href="#contacto" class="btn btn-primary btn-sm">Solicita una demo</a>
+      <a href="#solicitud" class="btn btn-primary btn-sm">Solicita una demo</a>
     </div>
     <div class="split-card" id="transportistas">
       <span class="tag">Para transportistas</span>
@@ -485,7 +485,45 @@
       <h2>¿Listo para dejar de perseguir cotizaciones?</h2>
       <p>Agenda una demo de 15 minutos y te mostramos cómo funciona con tu operación.</p>
     </div>
-    <a href="#contacto" class="btn btn-primary">Solicita una demo</a>
+    <a href="#solicitud" class="btn btn-primary">Solicita una demo</a>
+  </div>
+</section>
+
+<section class="quote-section" id="solicitud">
+  <div class="section-head">
+    <h2>Solicita una demo</h2>
+    <p>Déjanos tus datos y la ruta que más mueves. Te contactamos para mostrarte RutaNexo con tu operación.</p>
+  </div>
+  <div class="quote-grid">
+    <form class="quote-form" id="lead-form" novalidate>
+      <div class="field">
+        <label for="lead-nombre">Nombre</label>
+        <input id="lead-nombre" type="text" maxlength="80" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="lead-empresa">Empresa</label>
+        <input id="lead-empresa" type="text" maxlength="100" autocomplete="organization" required>
+      </div>
+      <div class="field">
+        <label for="lead-correo">Correo</label>
+        <input id="lead-correo" type="email" maxlength="120" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="lead-origen">Ruta: origen</label>
+        <select id="lead-origen" required></select>
+      </div>
+      <div class="field">
+        <label for="lead-destino">Ruta: destino</label>
+        <select id="lead-destino" required></select>
+      </div>
+      <input id="lead-sitio" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+      <button type="submit" class="btn btn-primary" id="lead-btn">Enviar solicitud</button>
+      <p class="field hint" style="margin-top:12px;">Usamos tus datos solo para contactarte sobre esta solicitud.</p>
+    </form>
+    <div class="quote-result" id="lead-result" aria-live="polite">
+      <h3>Tu solicitud</h3>
+      <p class="quote-empty">Cuando la envíes, aquí verás la confirmación.</p>
+    </div>
   </div>
 </section>
 
@@ -612,13 +650,25 @@
     mostrar(`<p class="quote-error">${mensaje}</p>`);
   }
 
-  // Distancia por carretera en km, con la API pública de OSRM.
+  // Servidores OSRM públicos: si el primero falla o tarda, se intenta el de respaldo.
+  const SERVIDORES_RUTA = [
+    "https://router.project-osrm.org/route/v1/driving/",
+    "https://routing.openstreetmap.de/routed-car/route/v1/driving/",
+  ];
+
+  // Distancia por carretera en km.
   async function distanciaKm(a, b) {
-    const url = `https://router.project-osrm.org/route/v1/driving/${a[2]},${a[1]};${b[2]},${b[1]}?overview=false`;
-    const respuesta = await fetch(url, { signal: AbortSignal.timeout(15000) });
-    const datos = await respuesta.json();
-    if (datos.code !== "Ok" || !datos.routes.length) throw new Error(datos.code);
-    return datos.routes[0].distance / 1000;
+    for (const servidor of SERVIDORES_RUTA) {
+      try {
+        const url = `${servidor}${a[2]},${a[1]};${b[2]},${b[1]}?overview=false`;
+        const respuesta = await fetch(url, { signal: AbortSignal.timeout(8000) });
+        const datos = await respuesta.json();
+        if (datos.code === "Ok" && datos.routes.length) return datos.routes[0].distance / 1000;
+      } catch {
+        // Sin respuesta o respuesta inválida: probar el siguiente servidor.
+      }
+    }
+    throw new Error("Ningún servidor de rutas respondió");
   }
 
   form.addEventListener("submit", async (evento) => {
@@ -649,10 +699,63 @@
         <div class="quote-total"><span>Costo estimado</span><strong>${pesos.format(total)}</strong></div>
         <p class="quote-note">Estimado en MXN. No incluye casetas, maniobras ni regreso vacío. Distancia calculada con OSRM sobre datos de OpenStreetMap.</p>`);
     } catch {
-      error("No pudimos calcular la distancia en este momento. Intenta de nuevo en unos segundos.");
+      error("El servicio de mapas que usamos para medir la distancia no está respondiendo, así que no podemos darte un estimado en este momento. Intenta de nuevo en unos minutos o envíanos tu solicitud abajo y te cotizamos directamente.");
     } finally {
       boton.disabled = false;
       boton.textContent = "Calcular estimado";
+    }
+  });
+
+  // Solicitudes de demo: se envían a /api/solicitud, que las guarda en la base de datos.
+  const leadForm = document.getElementById("lead-form");
+  const leadBoton = document.getElementById("lead-btn");
+  const leadResultado = document.getElementById("lead-result");
+  const leadOrigen = document.getElementById("lead-origen");
+  const leadDestino = document.getElementById("lead-destino");
+
+  for (const select of [leadOrigen, leadDestino]) {
+    select.add(new Option("Selecciona una ciudad", ""));
+    CIUDADES.forEach(([nombre]) => select.add(new Option(nombre, nombre)));
+  }
+
+  function mostrarLead(html) {
+    leadResultado.innerHTML = "<h3>Tu solicitud</h3>" + html;
+  }
+
+  leadForm.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    const solicitud = {
+      nombre: document.getElementById("lead-nombre").value.trim(),
+      empresa: document.getElementById("lead-empresa").value.trim(),
+      correo: document.getElementById("lead-correo").value.trim(),
+      origen: leadOrigen.value,
+      destino: leadDestino.value,
+      sitio: document.getElementById("lead-sitio").value,
+    };
+
+    if (!solicitud.nombre || !solicitud.empresa) return mostrarLead('<p class="quote-error">Escribe tu nombre y el de tu empresa.</p>');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(solicitud.correo)) return mostrarLead('<p class="quote-error">Escribe un correo válido, por ejemplo nombre@empresa.com.</p>');
+    if (!solicitud.origen || !solicitud.destino) return mostrarLead('<p class="quote-error">Elige la ciudad de origen y la de destino de tu ruta.</p>');
+    if (solicitud.origen === solicitud.destino) return mostrarLead('<p class="quote-error">El origen y el destino son la misma ciudad. Elige ciudades distintas.</p>');
+
+    leadBoton.disabled = true;
+    leadBoton.textContent = "Enviando…";
+    try {
+      const respuesta = await fetch("/api/solicitud", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(solicitud),
+        signal: AbortSignal.timeout(15000),
+      });
+      const datos = await respuesta.json().catch(() => ({}));
+      if (!respuesta.ok) throw new Error(datos.error || "No pudimos guardar tu solicitud.");
+      leadForm.reset();
+      mostrarLead(`<p>¡Gracias, ${solicitud.nombre.replace(/[<>&"]/g, "")}! Recibimos tu solicitud para la ruta <strong>${solicitud.origen} → ${solicitud.destino}</strong>. Te escribiremos a tu correo.</p>`);
+    } catch (e) {
+      mostrarLead(`<p class="quote-error">${e.name === "TimeoutError" ? "El servidor tardó demasiado en responder." : e instanceof TypeError ? "No pudimos conectar con el servidor." : e.message} Intenta de nuevo en unos minutos.</p>`);
+    } finally {
+      leadBoton.disabled = false;
+      leadBoton.textContent = "Enviar solicitud";
     }
   });
 </script>
