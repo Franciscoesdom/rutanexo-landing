@@ -10,7 +10,9 @@ RutaNexo Logística es una plataforma mexicana que conecta a empresas que necesi
 
 | Archivo | Para qué sirve |
 |---|---|
-| `index.html` | El sitio completo: landing page y cotizador de flete |
+| `index.html` | El sitio completo: landing page, cotizador de flete y formulario de solicitud de demo |
+| `api/solicitud.js` | Función de Vercel que valida cada solicitud de demo y la guarda en Supabase |
+| `supabase/solicitudes.sql` | Script para crear la tabla `solicitudes` en Supabase |
 | `PROMPT_LOG.md` | Bitácora de prompts y decisiones del Assignment 2 |
 | `CLAUDE.md` y `guia_AAT.md` | Instrucciones y guía del curso para el asistente de IA |
 
