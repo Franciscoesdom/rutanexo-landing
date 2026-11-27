@@ -14,7 +14,7 @@ RutaNexo Logística es una plataforma mexicana que conecta a empresas que necesi
 | `api/solicitud.js` | Función de Vercel que valida cada solicitud de demo y la guarda en Supabase |
 | `supabase/solicitudes.sql` | Script para crear la tabla `solicitudes` en Supabase |
 | `PROMPT_LOG.md` | Bitácora de prompts y decisiones del Assignment 2 |
-| `CLAUDE.md` y `guia_AAT.md` | Instrucciones y guía del curso para el asistente de IA |
+| `CLAUDE.md` | Instrucciones del proyecto para el asistente de IA |
 
 ## Decisiones de diseño vs. sugerencias del IS
 
