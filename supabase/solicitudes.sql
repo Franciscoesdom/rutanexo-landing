@@ -14,3 +14,6 @@ create table if not exists public.solicitudes (
 -- Seguridad: con RLS activado y sin políticas, nadie puede leer ni escribir con la clave pública.
 -- Solo la función del servidor (con la clave secreta) puede insertar; tú las ves en el Table Editor.
 alter table public.solicitudes enable row level security;
+
+-- La API de datos no expone tablas nuevas automáticamente: solo la clave secreta (service_role) puede insertar.
+grant select, insert on public.solicitudes to service_role;
