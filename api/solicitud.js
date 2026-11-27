@@ -57,14 +57,7 @@ module.exports = async (req, res) => {
       console.error("Supabase respondió", respuesta.status, detalle);
       // El código de Supabase (p. ej. 401 o PGRST205) ayuda a diagnosticar y no expone la clave.
       const codigo = (detalle.match(/"code"\s*:\s*"([^"]+)"/) || [])[1] || "";
-      // Diagnóstico temporal: rasgos de la clave, nunca la clave.
-      const clave = {
-        prefijo_ok: SUPABASE_SECRET_KEY.startsWith("sb_secret_") || SUPABASE_SECRET_KEY.startsWith("eyJ"),
-        longitud: SUPABASE_SECRET_KEY.length,
-        tiene_puntos_o_espacios: /[•\s]/.test(SUPABASE_SECRET_KEY),
-        url_ok: /^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(SUPABASE_URL),
-      };
-      return res.status(502).json({ error: "No pudimos guardar tu solicitud.", codigo: `${respuesta.status} ${codigo}`.trim(), clave });
+      return res.status(502).json({ error: "No pudimos guardar tu solicitud.", codigo: `${respuesta.status} ${codigo}`.trim() });
     }
     return res.status(201).json({ ok: true });
   } catch (error) {
